@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 67554f2314d91a842888004a70839a9c
+guid: 9a500e649a66866459ac4a5318f5c4a4
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: Material
+    2100000: No Name
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Cube
+    4300000: Pillars_Wall
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -48,7 +48,7 @@ ModelImporter:
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 1
+    generateSecondaryUV: 0
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0

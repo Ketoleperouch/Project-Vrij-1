@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour {
         Move();
         VerticalLook();
         CheckGrounded();
+        CheckInteractables();
     }
 
     private void Move()
@@ -53,8 +54,8 @@ public class PlayerController : MonoBehaviour {
         }
         else
         {
-            x *= 0.7f;
-            y *= 0.7f;
+            x *= 0.9f;
+            y *= 0.9f;
         }
 
         var rotation = Input.GetAxis("Mouse X") * sensitivity;
@@ -120,6 +121,22 @@ public class PlayerController : MonoBehaviour {
     private void CheckGrounded()
     {
         grounded = Physics.Raycast(transform.position + originOffset, Vector3.down, groundCheckRadius, groundLayers);
+    }
+
+    private void CheckInteractables()
+    {
+        RaycastHit hit;
+        Vector3 screenPoint = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
+        if (Physics.Raycast(screenPoint, Camera.main.transform.forward, out hit, 2.5f))
+        {
+            if (hit.collider.isTrigger && hit.collider.CompareTag("Interactable"))
+            {
+                //Prompt Interaction UI element
+                Debug.Log("Press E to interact!");
+                if (Input.GetKeyDown(KeyCode.E))
+                    hit.collider.GetComponent<InteractableBase>().Activate();
+            }
+        }
     }
 
 }
