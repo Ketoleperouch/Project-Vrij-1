@@ -14,6 +14,7 @@ public class FlameBehaviour : MonoBehaviour {
     private float originalROT;
     private float originalLightIntensity;
     private Light flameLight;
+    private AudioSource source;
 
     private void Start()
     {
@@ -21,6 +22,7 @@ public class FlameBehaviour : MonoBehaviour {
         flameLight = GetComponentInChildren<Light>(false);
         originalROT = particles.emission.rateOverTime.constant;
         originalLightIntensity = flameLight.intensity;
+        source = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -38,6 +40,7 @@ public class FlameBehaviour : MonoBehaviour {
     private void SetValues()
     {
         flameLight.intensity = originalLightIntensity * (vitality / 100);
+        source.volume = vitality / 100;
         SetEmission();
         SetStartColor();
     }
@@ -60,9 +63,10 @@ public class FlameBehaviour : MonoBehaviour {
     private void Pulse()
     {
         //Pulse can only be activated when the vitality is sufficient. Otherwise, play a "cannot do this" sound.
-        if (vitality > 10f)
+        if (vitality > 30f)
         {
-            Instantiate(pulse, transform);
+            Instantiate(pulse, transform.position, Quaternion.identity);
+            vitality -= 20f;
             //Search for interactables and activate them:
             Collider[] pulseHits = Physics.OverlapSphere(transform.position, pulseRange);
             for (int i = 0; i < pulseHits.Length; i++)
