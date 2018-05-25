@@ -7,6 +7,7 @@ public class FlameBehaviour : MonoBehaviour {
     public float diminishMultiplier = 5f;
     public float pulseRange = 5f;
 
+    public GameObject healParticles;
     public GameObject pulse;
     public AudioClip noPulseClip; 
 
@@ -31,7 +32,7 @@ public class FlameBehaviour : MonoBehaviour {
     {
         vitality -= Time.deltaTime * diminishMultiplier;
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             Pulse();
         }
@@ -50,7 +51,12 @@ public class FlameBehaviour : MonoBehaviour {
     private void SetStartColor()
     {
         var startColor = particles.main;
-        startColor.startColor = new Color(startColor.startColor.color.r, startColor.startColor.color.g, startColor.startColor.color.b, vitality / 100);
+        if (vitality > 50)
+            startColor.startColor = (Color)Vector4.Lerp(startColor.startColor.color, new Color(0.0f, 1f, 0.8f, vitality / 100), Time.deltaTime);
+        else
+            startColor.startColor = (Color)Vector4.Lerp(startColor.startColor.color, new Color(0.9f, 0.6f, 0.2f, vitality / 100), Time.deltaTime);
+
+        flameLight.color = Vector4.Lerp(flameLight.color, startColor.startColor.color, Time.deltaTime);
     }
 
     private void SetEmission()
@@ -65,10 +71,10 @@ public class FlameBehaviour : MonoBehaviour {
     private void Pulse()
     {
         //Pulse can only be activated when the vitality is sufficient. Otherwise, play a "cannot do this" sound.
-        if (vitality > 30f && Vector3.Distance(player.transform.position, transform.position) < 5f)
+        if (vitality > 50f && Vector3.Distance(player.transform.position, transform.position) < 5f)
         {
             Instantiate(pulse, transform.position, Quaternion.identity);
-            vitality -= 15f;
+            vitality -= 10f;
             //Search for interactables and activate them:
             Collider[] pulseHits = Physics.OverlapSphere(transform.position, pulseRange);
             for (int i = 0; i < pulseHits.Length; i++)
@@ -81,7 +87,7 @@ public class FlameBehaviour : MonoBehaviour {
                 }
             }
         }
-        else
+        else if (Vector3.Distance(player.transform.position, transform.position) < 5f)
         {
             AudioSource.PlayClipAtPoint(noPulseClip, transform.position);
         }

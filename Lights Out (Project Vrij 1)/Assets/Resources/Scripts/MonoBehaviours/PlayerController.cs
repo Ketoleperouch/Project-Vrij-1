@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
     public Vector3 originOffset = Vector3.zero;
     public float groundCheckRadius = 0.1f;
     public LayerMask groundLayers;
+    public Transform hand;
 
     private CapsuleCollider playerCol;
     private Vector3 move;

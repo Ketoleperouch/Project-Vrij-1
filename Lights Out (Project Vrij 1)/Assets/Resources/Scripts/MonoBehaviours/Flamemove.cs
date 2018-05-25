@@ -5,15 +5,19 @@ public class Flamemove : MonoBehaviour {
 	public float speed = 1.5f;
 
     public bool isChanging { get; set; }
+    public bool isRunning { get; set; }
 
 	private Transform target;
 	private int waypointIndex = 0;
     private WayPoints wayPoints;
     private Rigidbody rb;
+    private PlayerController player;
 
 	void Start()
 	{
+        player = FindObjectOfType<PlayerController>();
         isChanging = false;
+        isRunning = false;
         wayPoints = FindObjectOfType<WayPoints>();
         target = wayPoints.points [0];
         rb = GetComponent<Rigidbody>();
@@ -21,6 +25,11 @@ public class Flamemove : MonoBehaviour {
 
 	void Update()
 	{
+        if (!isRunning)
+        {
+            CheckPlayerDistance();
+            return;
+        }
 		Vector3 dir = target.position - transform.position;
 		transform.Translate (dir.normalized  * speed * Time.deltaTime, Space.World);
         ApplyInertia();
@@ -29,6 +38,14 @@ public class Flamemove : MonoBehaviour {
 			GetNextWaypoint ();
 		}
 	}
+
+    void CheckPlayerDistance()
+    {
+        if (Vector3.Distance(player.transform.position, transform.position) < 3)
+        {
+            isRunning = true;
+        }
+    }
 
 	void GetNextWaypoint()
 	{
