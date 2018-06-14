@@ -2,7 +2,7 @@
 
 public class Pickup : MonoBehaviour {
 
-    public float restoration = 20f;
+    public float restoration = 35f;
     public WeaponSway sway;
     public int pickedUpLayer;
     public LayerMask playerLayer;
@@ -27,7 +27,7 @@ public class Pickup : MonoBehaviour {
     {
         if (pickedUp)
         {
-            lit.enabled = false;
+            //lit.enabled = false;
             gameObject.layer = pickedUpLayer;
             rb.isKinematic = true;
             col.enabled = false;
@@ -42,6 +42,7 @@ public class Pickup : MonoBehaviour {
                     Instantiate(flame.healParticles, flame.transform);
                     flame.vitality += restoration;
                     flame.vitality = Mathf.Clamp(flame.vitality, 0, 100);
+                    GetComponentInParent<PlayerController>().isHolding = false;
                     Destroy(gameObject);
                 }
             }
@@ -53,7 +54,7 @@ public class Pickup : MonoBehaviour {
             col.enabled = true;
             sway.enabled = false;
 
-            Collider[] playerInRange = Physics.OverlapSphere(transform.position, 1f, playerLayer);
+            Collider[] playerInRange = Physics.OverlapSphere(transform.position, 2f, playerLayer);
 
             if (playerInRange.Length > 0 && playerInRange[0].GetComponent<PlayerController>() && Input.GetMouseButtonDown(0))
             {
@@ -64,8 +65,13 @@ public class Pickup : MonoBehaviour {
 
     private void PickUp(PlayerController player)
     {
+        if (player.isHolding)
+        {
+            return;
+        }
+        player.isHolding = true;
         pickedUp = true;
-        Instantiate(gameObject, player.hand.position, Quaternion.identity, player.hand);
+        Instantiate(gameObject, player.hand.position, transform.rotation, player.hand);
         Destroy(gameObject);
     }
 

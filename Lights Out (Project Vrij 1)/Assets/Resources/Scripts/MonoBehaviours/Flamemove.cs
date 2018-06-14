@@ -11,11 +11,12 @@ public class Flamemove : MonoBehaviour {
 	private int waypointIndex = 0;
     private WayPoints wayPoints;
     private Rigidbody rb;
-    private PlayerController player;
+    private FlameBehaviour flame;
 
 	void Start()
 	{
-        player = FindObjectOfType<PlayerController>();
+        flame = GetComponentInChildren<FlameBehaviour>();
+        flame.vitality = 0;
         isChanging = false;
         isRunning = false;
         wayPoints = FindObjectOfType<WayPoints>();
@@ -27,25 +28,20 @@ public class Flamemove : MonoBehaviour {
 	{
         if (!isRunning)
         {
-            CheckPlayerDistance();
-            return;
+            if (flame.vitality < 80)
+                return;
+            else
+                isRunning = true;
         }
 		Vector3 dir = target.position - transform.position;
-		transform.Translate (dir.normalized  * speed * Time.deltaTime, Space.World);
+        float moveSpeed = flame.vitality > 20 ? speed : 0;
+		transform.Translate (dir.normalized  * moveSpeed * Time.deltaTime, Space.World);
         ApplyInertia();
 		if (Vector3.Distance (transform.position, target.position) <= 0.6f) 
 		{
 			GetNextWaypoint ();
 		}
 	}
-
-    void CheckPlayerDistance()
-    {
-        if (Vector3.Distance(player.transform.position, transform.position) < 3)
-        {
-            isRunning = true;
-        }
-    }
 
 	void GetNextWaypoint()
 	{

@@ -14,8 +14,8 @@ public class InteractableBase : MonoBehaviour {
 
     public void Activate()
     {
-        particles.Play();
+        if (particles)
+            particles.Play();
         onActivate.Invoke();
     }
-
 }

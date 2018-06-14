@@ -3,7 +3,7 @@
 public class PlayerController : MonoBehaviour {
 
     public float clampAngle = 80f;
-    public float moveSpeed = 3f;
+    public float moveSpeed = 2f;
     public float jumpForce = 250f;
     public float sensitivity = 150f;
     public GameObject m_playerCam;
@@ -12,8 +12,11 @@ public class PlayerController : MonoBehaviour {
     public float crouchColY = -0.85f;
     public Vector3 originOffset = Vector3.zero;
     public float groundCheckRadius = 0.1f;
+    public float runSpeed = 1.4f;
     public LayerMask groundLayers;
     public Transform hand;
+
+    public bool isHolding { get; set; }
 
     private CapsuleCollider playerCol;
     private Vector3 move;
@@ -84,6 +87,10 @@ public class PlayerController : MonoBehaviour {
             m_playerCam.transform.localPosition = new Vector3(0, Mathf.Lerp(m_playerCam.transform.localPosition.y, 0f, Time.deltaTime * crouchSpeed), 0);
             playerCol.height = originalColHeight;
             playerCol.center = new Vector3(playerCol.center.x, originalColY, playerCol.center.z);
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            move *= runSpeed;
         }
 
         //Finalize Movement:

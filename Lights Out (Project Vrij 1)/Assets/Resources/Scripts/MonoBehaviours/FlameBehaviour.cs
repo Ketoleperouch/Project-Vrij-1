@@ -6,10 +6,16 @@ public class FlameBehaviour : MonoBehaviour {
     public float vitality = 100f;
     public float diminishMultiplier = 5f;
     public float pulseRange = 5f;
+    public float threshold = 40f;
+
+    [ColorUsage(false)]
+    public Color neutralColor = Color.white;
+    [ColorUsage(false)]
+    public Color lowEnergyColor = Color.white;
 
     public GameObject healParticles;
     public GameObject pulse;
-    public AudioClip noPulseClip; 
+    public AudioClip noPulseClip;
 
     private ParticleSystem particles;
     private float originalROT;
@@ -30,7 +36,12 @@ public class FlameBehaviour : MonoBehaviour {
 
     private void Update()
     {
-        vitality -= Time.deltaTime * diminishMultiplier;
+        if (vitality > 0)
+        {
+            vitality -= Time.deltaTime * diminishMultiplier;
+        }
+        vitality = Mathf.Clamp(vitality, 0, 100);
+
 
         if (Input.GetMouseButtonDown(1))
         {
@@ -51,18 +62,17 @@ public class FlameBehaviour : MonoBehaviour {
     private void SetStartColor()
     {
         var startColor = particles.main;
-        if (vitality > 50)
-            startColor.startColor = (Color)Vector4.Lerp(startColor.startColor.color, new Color(0.0f, 1f, 0.8f, vitality / 100), Time.deltaTime);
+        if (vitality > threshold)
+            startColor.startColor = (Color)Vector4.Lerp(startColor.startColor.color, new Color(neutralColor.r, neutralColor.g, neutralColor.b, vitality / 100), Time.deltaTime);
         else
-            startColor.startColor = (Color)Vector4.Lerp(startColor.startColor.color, new Color(0.9f, 0.6f, 0.2f, vitality / 100), Time.deltaTime);
+            startColor.startColor = (Color)Vector4.Lerp(startColor.startColor.color, new Color(lowEnergyColor.r, lowEnergyColor.g, lowEnergyColor.b, vitality / 100), Time.deltaTime);
 
         flameLight.color = Vector4.Lerp(flameLight.color, startColor.startColor.color, Time.deltaTime);
     }
 
     private void SetEmission()
     {
-        ParticleSystem.MinMaxCurve newRate = new ParticleSystem.MinMaxCurve();
-        newRate.constant = originalROT * (vitality / 100);
+        ParticleSystem.MinMaxCurve newRate = new ParticleSystem.MinMaxCurve{constant = originalROT * (vitality / 100)};
 
         var emission = particles.emission;
         emission.rateOverTime = newRate.constant;
@@ -71,7 +81,7 @@ public class FlameBehaviour : MonoBehaviour {
     private void Pulse()
     {
         //Pulse can only be activated when the vitality is sufficient. Otherwise, play a "cannot do this" sound.
-        if (vitality > 50f && Vector3.Distance(player.transform.position, transform.position) < 5f)
+        if (vitality > threshold && Vector3.Distance(player.transform.position, transform.position) < 5f)
         {
             Instantiate(pulse, transform.position, Quaternion.identity);
             vitality -= 10f;
