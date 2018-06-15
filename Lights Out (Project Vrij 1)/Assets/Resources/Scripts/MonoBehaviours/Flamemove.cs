@@ -3,7 +3,8 @@
 public class Flamemove : MonoBehaviour {
 
 	public float speed = 1.5f;
-
+    public float moveThreshold = 10f;
+    
     public bool isChanging { get; set; }
     public bool isRunning { get; set; }
 
@@ -28,13 +29,13 @@ public class Flamemove : MonoBehaviour {
 	{
         if (!isRunning)
         {
-            if (flame.vitality < 80)
+            if (flame.vitality < 90)
                 return;
             else
                 isRunning = true;
         }
 		Vector3 dir = target.position - transform.position;
-        float moveSpeed = flame.vitality > 20 ? speed : 0;
+        float moveSpeed = flame.vitality > moveThreshold ? speed : 0;
 		transform.Translate (dir.normalized  * moveSpeed * Time.deltaTime, Space.World);
         ApplyInertia();
 		if (Vector3.Distance (transform.position, target.position) <= 0.6f) 
@@ -53,11 +54,18 @@ public class Flamemove : MonoBehaviour {
 			//Destroy (gameObject);
 			return;
 		}
+        //Check for events
+        if (wayPoints.points[waypointIndex].GetComponent<WaypointEvent>())
+        {
+            wayPoints.points[waypointIndex].GetComponent<WaypointEvent>().Execute(flame);
+        }
 		waypointIndex++;
+        //Check for speed changers
         if (wayPoints.points[waypointIndex].GetComponent<WaypointSpeedChanger>())
         {
             wayPoints.points[waypointIndex].GetComponent<WaypointSpeedChanger>().SpeedChange(this);
         }
+        //Set new target
         target = wayPoints.points [waypointIndex];
 	}
 

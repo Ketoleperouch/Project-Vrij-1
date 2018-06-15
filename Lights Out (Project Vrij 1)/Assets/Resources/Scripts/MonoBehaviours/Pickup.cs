@@ -6,6 +6,7 @@ public class Pickup : MonoBehaviour {
     public WeaponSway sway;
     public int pickedUpLayer;
     public LayerMask playerLayer;
+    public AudioClip pickupSound;
 
     [SerializeField] private bool pickedUp = false;
 
@@ -71,6 +72,7 @@ public class Pickup : MonoBehaviour {
         }
         player.isHolding = true;
         pickedUp = true;
+        AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         Instantiate(gameObject, player.hand.position, transform.rotation, player.hand);
         Destroy(gameObject);
     }

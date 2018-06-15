@@ -17,14 +17,15 @@ public class EnlightSystem : MonoBehaviour {
         {
             float dist = Vector3.Distance(lights[i].transform.position, transform.position);
             //Check if the player is close enough to the light:
-            if (dist < lights[i].range / 5)
+            if (dist < lights[i].range / 4)
             {
                 Debug.DrawLine(lights[i].transform.position, transform.position, Color.yellow);
 
-                //Get the relative distance of the player to the light
-                float distFromLight = Mathf.Log(lights[i].range / dist, lights[i].range);
+                //Get the relative distance of the player to the light taking its intensity in account as well
+                float rDist = (lights[i].range - dist);
+                float distFromLight = rDist + (lights[i].intensity * rDist);
 
-                intensity += distFromLight;
+                intensity += Mathf.Log10(distFromLight);
             }
         }
         enlighted = intensity;

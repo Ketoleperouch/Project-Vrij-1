@@ -6,13 +6,14 @@ public class FlameBehaviour : MonoBehaviour {
     public float vitality = 100f;
     public float diminishMultiplier = 5f;
     public float pulseRange = 5f;
+    public float pulseCost = 4f;
     public float threshold = 40f;
 
     [ColorUsage(false)]
     public Color neutralColor = Color.white;
     [ColorUsage(false)]
     public Color lowEnergyColor = Color.white;
-
+    public Light flameLight;
     public GameObject healParticles;
     public GameObject pulse;
     public AudioClip noPulseClip;
@@ -20,9 +21,9 @@ public class FlameBehaviour : MonoBehaviour {
     private ParticleSystem particles;
     private float originalROT;
     private float originalLightIntensity;
-    private Light flameLight;
     private AudioSource source;
     private PlayerController player;
+    private Flamemove flame;
 
     private void Start()
     {
@@ -32,11 +33,12 @@ public class FlameBehaviour : MonoBehaviour {
         originalROT = particles.emission.rateOverTime.constant;
         originalLightIntensity = flameLight.intensity;
         source = GetComponent<AudioSource>();
+        flame = GetComponentInParent<Flamemove>();
     }
 
     private void Update()
     {
-        if (vitality > 0)
+        if (vitality > 0 && flame.isRunning)
         {
             vitality -= Time.deltaTime * diminishMultiplier;
         }
@@ -84,7 +86,7 @@ public class FlameBehaviour : MonoBehaviour {
         if (vitality > threshold && Vector3.Distance(player.transform.position, transform.position) < 5f)
         {
             Instantiate(pulse, transform.position, Quaternion.identity);
-            vitality -= 10f;
+            vitality -= pulseCost;
             //Search for interactables and activate them:
             Collider[] pulseHits = Physics.OverlapSphere(transform.position, pulseRange);
             for (int i = 0; i < pulseHits.Length; i++)
@@ -94,6 +96,24 @@ public class FlameBehaviour : MonoBehaviour {
                 if (interactable)
                 {
                     interactable.Activate();
+                }
+                else
+                {
+                    //Check for interactables in parents
+                    interactable = pulseHits[i].GetComponentInParent<InteractableBase>();
+                    if (interactable)
+                    {
+                        interactable.Activate();
+                    }
+                    else
+                    {
+                        //Last resort: check for interactables in children.
+                        interactable = pulseHits[i].GetComponentInChildren<InteractableBase>();
+                        if (interactable)
+                        {
+                            interactable.Activate();
+                        }
+                    }
                 }
             }
         }

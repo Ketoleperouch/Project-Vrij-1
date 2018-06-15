@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class WaypointEvent : MonoBehaviour {
+public abstract class WaypointEvent : MonoBehaviour {
 
-    //Waypoint events are called whenever the energy source reaches the waypoint.
-    //To be scripted though.
+    //Waypoint events are called whenever the energy source reaches the waypoint. Abstract, so must be overridden.
+    public abstract void Execute(FlameBehaviour flame);
 	
 }

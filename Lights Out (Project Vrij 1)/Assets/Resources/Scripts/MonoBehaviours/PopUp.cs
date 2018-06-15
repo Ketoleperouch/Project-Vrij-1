@@ -16,7 +16,7 @@ public class PopUp : MonoBehaviour
         logText.text = "";
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKey(KeyCode.E) && isDisplaying)
         {
@@ -24,24 +24,25 @@ public class PopUp : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !isDisplaying)
         {
             StartCoroutine(Popup());
         }
     }
 
-    void Close()
+    private void Close()
     {
         isDisplaying = false;
+        logText.text = "";
         if (destroyOnClose)
         {
             Destroy(this);
         }
     }
 
-    IEnumerator Popup()
+    private IEnumerator Popup()
     {
         isDisplaying = true;
         logText.text = displayText;
